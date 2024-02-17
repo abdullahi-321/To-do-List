@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="icon" href="https://fav.farm/🔥" />
+    <link
+      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <img src="laptop.jpg" alt="" />
+    <form action="">
+      <h4>Add an item</h4>
+      <input type="text" name="item" id="input" />
+      <button type="submit" id="submit">Add Item</button>
+    </form>
+    <section>
+      <h1>To-do List <span id="span">+</span></h1>
+      <main></main>
+    </section>
+
+    <script>
+      const input = document.querySelector("#input");
+      const submit = document.querySelector("#submit");
+      const form = document.querySelector("form");
+      const div = document.querySelector("main");
+      const span = document.getElementById("span");
+      const span2 = document.getElementById("span2");
+
+      window.addEventListener("keyup", (e) => {
+        if (e.keyCode === 220 && !form.classList.contains("out")) {
+          form.classList.add("out");
+        }
+      });
+
+      span.onclick = () => addTask();
+
+      function addTask() {
+        form.classList.add("out");
+      }
+
+      let itemInput;
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        addItem();
+        form.reset();
+        form.classList.remove("out");
+      });
+
+      function addItem() {
+        function containsOnlySpaces(str) {
+          return /^\s*$/.test(str);
+        }
+        if (!containsOnlySpaces(input.value)) {
+          if (JSON.parse(localStorage.getItem("texts")) === null) {
+            objs = [];
+          } else {
+            objs = JSON.parse(localStorage.getItem("texts"));
+          }
+
+          itemInput = {
+            text: input.value,
+          };
+          objs.push(itemInput);
+          localStorage.setItem("texts", JSON.stringify(objs));
+          displayItems();
+        }
+      }
+
+      function displayItems() {
+        let items = localStorage.getItem("texts");
+        let finalItems = JSON.parse(items);
+        console.log(finalItems);
+        div.innerHTML = ``;
+
+        finalItems.forEach((item) => {
+          let text = document.createElement("p");
+          let btn = document.createElement("button");
+          btn.innerHTML = `<i class='bx bx-trash' style='color:#ff0000'></i>`;
+          btn.classList.add("btn");
+          text.innerHTML = `${item.text}`;
+          text.appendChild(btn);
+          div.appendChild(text);
+
+          btn.onclick = () => {
+            let specificItem = JSON.parse(items);
+            specificItem.forEach((value) => {
+              if (value.text == item.text) {
+                let submit = confirm(
+                  "Are you sure you want to delete this item"
+                );
+                if (submit) {
+                  if (
+                    specificItem.indexOf(value) == 0 &&
+                    specificItem.length == 1
+                  ) {
+                    specificItem = [];
+                  } else if (specificItem.indexOf(value) == 0) {
+                    specificItem.shift();
+                  } else {
+                    specificItem.splice(
+                      specificItem.indexOf(value),
+                      specificItem.indexOf(value)
+                    );
+                  }
+                }
+              } else {
+                return;
+              }
+            });
+            localStorage.setItem("texts", JSON.stringify(specificItem));
+            displayItems();
+          };
+        });
+      }
+      displayItems();
+    </script>
+  </body>
+</html>
